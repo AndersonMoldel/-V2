@@ -1,8 +1,658 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字排盤系統</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #F9F9F7;
+            --bg-card: #FFFFFF;
+            --border: #E6E6E2;
+            --accent-primary: #D34C31;
+            --text-primary: #111111;
+            --text-muted: #888883;
+            
+            --metal: #8E9196;
+            --wood: #5C7360;
+            --water: #4A637D;
+            --fire: #D34C31;
+            --earth: #C2A378;
+            
+            --metal-bg: #F2F3F5;
+            --wood-bg: #F0F4F1;
+            --water-bg: #EFF3F8;
+            --fire-bg: #FDF2F0;
+            --earth-bg: #FBF7F1;
+        }
 
-export default function App() {
-  return <div></div>;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 2.8rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Input Section */
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        input, select {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 0;
+            border-radius: 0;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 300;
+            outline: none;
+            transition: border-color 0.3s ease;
+            -webkit-appearance: none;
+        }
+
+        input:focus, select:focus {
+            border-bottom-color: var(--text-primary);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23111111%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px top 50%;
+            background-size: 10px auto;
+            padding-right: 24px;
+        }
+        
+        select option {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        button.btn-primary {
+            width: 100%;
+            background: var(--text-primary);
+            color: var(--bg-card);
+            border: none;
+            padding: 16px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button.btn-primary:hover {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(211, 76, 49, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Results Section */
+        .result-section {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .result-section.active {
+            display: flex;
+        }
+
+        .section-title {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 2px;
+            height: 24px;
+            background: var(--accent-primary);
+            border-radius: 0;
+        }
+
+        /* Bazi Grid */
+        .bazi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            text-align: center;
+            direction: ltr; /* Left to right as requested */
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .pillar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 24px 12px;
+            background: transparent;
+            border-radius: 0;
+            border-right: 1px solid var(--border);
+        }
+
+        .pillar:last-child {
+            border-right: none;
+        }
+
+        .pillar-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .char-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bazi-char {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 3.2rem;
+            line-height: 1;
+            font-weight: 400;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            border: 1px solid transparent;
+        }
+
+        /* Elements Colors */
+        .c-metal { color: var(--metal); }
+        .c-wood { color: var(--wood); }
+        .c-water { color: var(--water); }
+        .c-fire { color: var(--fire); }
+        .c-earth { color: var(--earth); }
+
+        .bg-metal { background: var(--metal-bg); border-color: rgba(176, 181, 185, 0.3); }
+        .bg-wood { background: var(--wood-bg); border-color: rgba(121, 148, 122, 0.3); }
+        .bg-water { background: var(--water-bg); border-color: rgba(107, 130, 153, 0.3); }
+        .bg-fire { background: var(--fire-bg); border-color: rgba(194, 109, 109, 0.3); }
+        .bg-earth { background: var(--earth-bg); border-color: rgba(188, 163, 127, 0.3); }
+
+        /* Progress Bars */
+        .energy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .energy-item {
+            display: grid;
+            grid-template-columns: 40px 1fr 40px;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .energy-label {
+            font-family: 'Noto Serif TC', serif;
+            font-weight: 400;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .progress-track {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .energy-value {
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: var(--text-muted);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Analysis */
+        .analysis-content {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .analysis-content ul {
+            list-style: none;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-left: 0;
+        }
+
+        .analysis-content li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .analysis-content li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .analysis-content li::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            margin-top: 12px;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        /* Animations */
+        .animate-slide-up {
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .bazi-grid {
+                grid-template-columns: repeat(2, 1fr);
+                direction: ltr;
+                grid-template-areas: 
+                    "year month"
+                    "day hour";
+            }
+            #pillar-year { grid-area: year; border-bottom: 1px solid var(--border); }
+            #pillar-month { grid-area: month; border-bottom: 1px solid var(--border); border-right: none; }
+            #pillar-day { grid-area: day; }
+            #pillar-hour { grid-area: hour; border-right: none; }
+            
+            .card {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>八字排盤系統</h1>
+        <p class="subtitle"></p>
+    </header>
+
+    <div class="card input-section">
+        <div class="input-grid">
+            <div class="input-group">
+                <label>出生年 (西元)</label>
+                <input type="number" id="in-year" value="1990" min="1900" max="2100">
+            </div>
+            <div class="input-group">
+                <label>出生月</label>
+                <input type="number" id="in-month" value="1" min="1" max="12">
+            </div>
+            <div class="input-group">
+                <label>出生日</label>
+                <input type="number" id="in-day" value="1" min="1" max="31">
+            </div>
+            <div class="input-group">
+                <label>出生時辰</label>
+                <select id="in-hour">
+                    <option value="-1">不確定 (Unknown)</option>
+                    <option value="0">子時 (23:00 - 00:59)</option>
+                    <option value="1">丑時 (01:00 - 02:59)</option>
+                    <option value="2">寅時 (03:00 - 04:59)</option>
+                    <option value="3">卯時 (05:00 - 06:59)</option>
+                    <option value="4">辰時 (07:00 - 08:59)</option>
+                    <option value="5">巳時 (09:00 - 10:59)</option>
+                    <option value="6">午時 (11:00 - 12:59)</option>
+                    <option value="7">未時 (13:00 - 14:59)</option>
+                    <option value="8">申時 (15:00 - 16:59)</option>
+                    <option value="9">酉時 (17:00 - 18:59)</option>
+                    <option value="10">戌時 (19:00 - 20:59)</option>
+                    <option value="11">亥時 (21:00 - 22:59)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>性別</label>
+                <select id="in-gender">
+                    <option value="M">男 (Male)</option>
+                    <option value="F">女 (Female)</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="calculateBazi()">立即排盤</button>
+    </div>
+
+    <div id="result" class="result-section">
+        <!-- 主盤 -->
+        <div class="card animate-slide-up" style="animation-delay: 0.1s;">
+            <h2 class="section-title">四柱八字主盤</h2>
+            <div class="bazi-grid" id="bazi-grid">
+                <!-- Pillars injected by JS -->
+            </div>
+        </div>
+
+        <!-- 五行能量 -->
+        <div class="card animate-slide-up" style="animation-delay: 0.2s;">
+            <h2 class="section-title">五行能量分析</h2>
+            <div class="energy-list" id="energy-list">
+                <!-- Progress bars injected by JS -->
+            </div>
+        </div>
+
+        <!-- 簡析 -->
+        <div class="card animate-slide-up" style="animation-delay: 0.3s;">
+            <h2 class="section-title">日主強弱簡析</h2>
+            <div class="analysis-content" id="analysis-content">
+                <!-- Analysis injected by JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 命理基礎資料 ---
+    const STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+    const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+    
+    // 五行與陰陽 (0:木, 1:火, 2:土, 3:金, 4:水)
+    const WUXING_NAMES = ['木', '火', '土', '金', '水'];
+    const WUXING_COLORS = ['wood', 'fire', 'earth', 'metal', 'water'];
+    
+    const STEM_WX = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4]; // 甲乙木, 丙丁火...
+    const STEM_YY = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; // 1:陽, 0:陰
+    
+    const BRANCH_WX = [4, 2, 0, 0, 2, 1, 1, 2, 3, 3, 2, 4]; // 子水, 丑土, 寅木...
+    const BRANCH_YY = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; // 子陽, 丑陰... (應用上)
+
+    // 節氣平均日 (簡化版，1-12月對應小寒到大雪)
+    const JIE_DAYS = [6, 4, 6, 5, 6, 6, 7, 8, 8, 8, 8, 7];
+
+    // --- 核心邏輯 ---
+
+    // 計算四柱
+    function calculatePillars(y, m, d, h) {
+        // 年柱 (以立春 Feb 4/5 為界)
+        let baziYear = y;
+        if (m === 1 || (m === 2 && d < JIE_DAYS[1])) {
+            baziYear -= 1;
+        }
+        const yStem = ((baziYear - 4) % 10 + 10) % 10;
+        const yBranch = ((baziYear - 4) % 12 + 12) % 12;
+
+        // 月柱
+        let baziMonthIdx = m - 1; // 0=Jan
+        if (d < JIE_DAYS[baziMonthIdx]) {
+            baziMonthIdx -= 1;
+        }
+        if (baziMonthIdx < 0) baziMonthIdx = 11;
+        
+        // 寅月是正月，對應 index 2
+        const mBranch = (baziMonthIdx + 1) % 12; 
+        
+        // 五虎遁求月干
+        const mStemBase = ((yStem % 5) * 2 + 2) % 10;
+        const mStem = (mStemBase + (mBranch >= 2 ? mBranch - 2 : mBranch + 10)) % 10;
+
+        // 日柱 (1900-01-01 是甲戌日, stem:0, branch:10)
+        const baseDate = Date.UTC(1900, 0, 1);
+        const targetDate = Date.UTC(y, m - 1, d);
+        const diffDays = Math.floor((targetDate - baseDate) / 86400000);
+        const dStem = (diffDays % 10 + 10) % 10;
+        const dBranch = ((10 + diffDays) % 12 + 12) % 12;
+
+        // 時柱
+        let hStem = -1;
+        let hBranch = -1;
+        if (h !== -1) {
+            hBranch = h;
+            // 五鼠遁求時干
+            const hStemBase = ((dStem % 5) * 2) % 10;
+            hStem = (hStemBase + hBranch) % 10;
+        }
+
+        return {
+            year: [yStem, yBranch],
+            month: [mStem, mBranch],
+            day: [dStem, dBranch],
+            hour: [hStem, hBranch]
+        };
+    }
+
+    // UI 渲染函數
+    function renderPillar(id, title, stem, branch) {
+        if (stem === -1 || branch === -1) {
+            return `
+                <div class="pillar" id="pillar-${id}">
+                    <div class="pillar-title">${title}</div>
+                    
+                    <div class="char-box">
+                        <span class="tag" style="background: var(--metal-bg); color: var(--text-muted);">未知</span>
+                        <div class="bazi-char" style="color: var(--text-muted);">？</div>
+                    </div>
+
+                    <div class="char-box" style="margin-top: 8px;">
+                        <div class="bazi-char" style="color: var(--text-muted);">？</div>
+                        <span class="tag" style="background: var(--metal-bg); color: var(--text-muted);">未知</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        const sWx = STEM_WX[stem];
+        const bWx = BRANCH_WX[branch];
+
+        return `
+            <div class="pillar" id="pillar-${id}">
+                <div class="pillar-title">${title}</div>
+                
+                <div class="char-box">
+                    <span class="tag bg-${WUXING_COLORS[sWx]} c-${WUXING_COLORS[sWx]}">${WUXING_NAMES[sWx]}${STEM_YY[stem]?'陽':'陰'}</span>
+                    <div class="bazi-char c-${WUXING_COLORS[sWx]}">${STEMS[stem]}</div>
+                </div>
+
+                <div class="char-box" style="margin-top: 8px;">
+                    <div class="bazi-char c-${WUXING_COLORS[bWx]}">${BRANCHES[branch]}</div>
+                    <span class="tag bg-${WUXING_COLORS[bWx]} c-${WUXING_COLORS[bWx]}">${WUXING_NAMES[bWx]}${BRANCH_YY[branch]?'陽':'陰'}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function calculateBazi() {
+        const y = parseInt(document.getElementById('in-year').value);
+        const m = parseInt(document.getElementById('in-month').value);
+        const d = parseInt(document.getElementById('in-day').value);
+        const h = parseInt(document.getElementById('in-hour').value);
+
+        const pillars = calculatePillars(y, m, d, h);
+        const dayStem = pillars.day[0];
+
+        // 1. 渲染主盤
+        const grid = document.getElementById('bazi-grid');
+        grid.innerHTML = 
+            renderPillar('year', '年柱', pillars.year[0], pillars.year[1]) +
+            renderPillar('month', '月柱', pillars.month[0], pillars.month[1]) +
+            renderPillar('day', '日柱', pillars.day[0], pillars.day[1]) +
+            renderPillar('hour', '時柱', pillars.hour[0], pillars.hour[1]);
+
+        // 2. 五行能量計算
+        let energy = [0, 0, 0, 0, 0]; // 木火土金水
+        const addEnergy = (wx, val) => energy[wx] += val;
+
+        // 天干權重
+        [pillars.year[0], pillars.month[0], pillars.day[0]].forEach(s => addEnergy(STEM_WX[s], 10));
+        if (pillars.hour[0] !== -1) addEnergy(STEM_WX[pillars.hour[0]], 10);
+        
+        // 地支權重 (簡化：僅計地支主要五行)
+        [pillars.year[1], pillars.month[1], pillars.day[1]].forEach(b => {
+            addEnergy(BRANCH_WX[b], 10);
+        });
+        if (pillars.hour[1] !== -1) addEnergy(BRANCH_WX[pillars.hour[1]], 10);
+
+        const totalEnergy = energy.reduce((a, b) => a + b, 0);
+        const energyList = document.getElementById('energy-list');
+        energyList.innerHTML = '';
+        
+        WUXING_NAMES.forEach((name, idx) => {
+            const pct = Math.round((energy[idx] / totalEnergy) * 100);
+            energyList.innerHTML += `
+                <div class="energy-item">
+                    <div class="energy-label c-${WUXING_COLORS[idx]}">${name}</div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: ${pct}%; background-color: var(--${WUXING_COLORS[idx]});"></div>
+                    </div>
+                    <div class="energy-value">${pct}%</div>
+                </div>
+            `;
+        });
+
+        // 3. 簡析
+        const dWx = STEM_WX[dayStem];
+        const sameWx = dWx;
+        const resourceWx = (dWx + 4) % 5;
+        
+        const selfEnergy = energy[sameWx] + energy[resourceWx];
+        
+        // 得令判斷 (月支五行是否生助日主)
+        const mBranchWx = BRANCH_WX[pillars.month[1]];
+        const deLing = (mBranchWx === sameWx || mBranchWx === resourceWx);
+        
+        // 依據得令與否判斷身強身弱
+        const isStrong = deLing;
+
+        const analysis = document.getElementById('analysis-content');
+        analysis.innerHTML = `
+            <p>日主 <span class="bazi-char c-${WUXING_COLORS[dWx]}" style="font-size:1.2rem;">${STEMS[dayStem]}</span> 屬${WUXING_NAMES[dWx]}，整體能量判定為：<span class="highlight" style="font-size:1.2rem;">${isStrong ? '身強' : '身弱'}</span></p>
+            <ul>
+                <li><strong>月令：</strong>生於${BRANCHES[pillars.month[1]]}月，${deLing ? '得令 (月支生助日主)，故判定為身強' : '失令 (月支消耗日主)，故判定為身弱'}。</li>
+            </ul>
+        `;
+
+        // 顯示結果區塊並重置動畫
+        const resultSec = document.getElementById('result');
+        resultSec.classList.remove('active');
+        void resultSec.offsetWidth; // trigger reflow
+        resultSec.classList.add('active');
+        
+        // 滾動到結果
+        setTimeout(() => {
+            resultSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+</script>
+
+</body>
+</html>
