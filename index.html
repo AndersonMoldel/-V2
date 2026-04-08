@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>八字排盤系統</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #F9F9F7;
@@ -25,6 +25,10 @@
             --water-bg: #EFF3F8;
             --fire-bg: #FDF2F0;
             --earth-bg: #FBF7F1;
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-serif: 'Noto Serif TC', "Times New Roman", Times, serif;
+            --font-kai: 'DFKai-SB', 'BiauKai', 'KaiTi', '楷体', serif;
         }
 
         * {
@@ -36,7 +40,7 @@
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-sans);
             font-weight: 300;
             line-height: 1.6;
             min-height: 100vh;
@@ -58,17 +62,18 @@
         }
 
         h1 {
-            font-family: 'Noto Serif TC', serif;
-            font-size: 2.8rem;
+            font-family: var(--font-serif);
+            font-size: 3.2rem;
             font-weight: 400;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             color: var(--text-primary);
             margin-bottom: 0.5rem;
         }
 
         p.subtitle {
+            font-family: var(--font-sans);
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             letter-spacing: 0.3em;
             text-transform: uppercase;
         }
@@ -96,6 +101,7 @@
         }
 
         label {
+            font-family: var(--font-sans);
             font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -109,9 +115,9 @@
             color: var(--text-primary);
             padding: 8px 0;
             border-radius: 0;
-            font-family: 'Inter', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 300;
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 400;
             outline: none;
             transition: border-color 0.3s ease;
             -webkit-appearance: none;
@@ -141,7 +147,8 @@
             border: none;
             padding: 16px;
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
             font-weight: 500;
             letter-spacing: 0.1em;
             text-transform: uppercase;
@@ -170,11 +177,11 @@
         }
 
         .section-title {
-            font-family: 'Noto Serif TC', serif;
-            font-size: 1.4rem;
-            font-weight: 400;
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 500;
             color: var(--text-primary);
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -218,9 +225,10 @@
         }
 
         .pillar-title {
-            font-size: 0.75rem;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
             color: var(--text-muted);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
         }
 
@@ -232,18 +240,19 @@
         }
 
         .bazi-char {
-            font-family: 'Noto Serif TC', serif;
-            font-size: 3.2rem;
+            font-family: var(--font-kai);
+            font-size: 3.8rem;
             line-height: 1;
             font-weight: 400;
         }
 
         .tag {
-            font-size: 0.65rem;
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
             padding: 4px 10px;
             border-radius: 4px;
             font-weight: 500;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.05em;
             border: 1px solid transparent;
         }
 
@@ -275,9 +284,9 @@
         }
 
         .energy-label {
-            font-family: 'Noto Serif TC', serif;
+            font-family: var(--font-sans);
             font-weight: 400;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             text-align: center;
         }
 
@@ -297,8 +306,9 @@
         }
 
         .energy-value {
-            font-size: 0.8rem;
-            font-weight: 300;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 400;
             color: var(--text-muted);
             text-align: right;
             font-variant-numeric: tabular-nums;
@@ -306,7 +316,8 @@
 
         /* Analysis */
         .analysis-content {
-            font-size: 1rem;
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
             font-weight: 300;
             color: var(--text-primary);
             line-height: 1.8;
@@ -410,18 +421,30 @@
                 <label>出生時辰</label>
                 <select id="in-hour">
                     <option value="-1">不確定 (Unknown)</option>
-                    <option value="0">子時 (23:00 - 00:59)</option>
-                    <option value="1">丑時 (01:00 - 02:59)</option>
-                    <option value="2">寅時 (03:00 - 04:59)</option>
-                    <option value="3">卯時 (05:00 - 06:59)</option>
-                    <option value="4">辰時 (07:00 - 08:59)</option>
-                    <option value="5">巳時 (09:00 - 10:59)</option>
-                    <option value="6">午時 (11:00 - 12:59)</option>
-                    <option value="7">未時 (13:00 - 14:59)</option>
-                    <option value="8">申時 (15:00 - 16:59)</option>
-                    <option value="9">酉時 (17:00 - 18:59)</option>
-                    <option value="10">戌時 (19:00 - 20:59)</option>
-                    <option value="11">亥時 (21:00 - 22:59)</option>
+                    <option value="0">00:00 - 00:59 (早子時)</option>
+                    <option value="1">01:00 - 01:59 (丑時)</option>
+                    <option value="2">02:00 - 02:59 (丑時)</option>
+                    <option value="3">03:00 - 03:59 (寅時)</option>
+                    <option value="4">04:00 - 04:59 (寅時)</option>
+                    <option value="5">05:00 - 05:59 (卯時)</option>
+                    <option value="6">06:00 - 06:59 (卯時)</option>
+                    <option value="7">07:00 - 07:59 (辰時)</option>
+                    <option value="8">08:00 - 08:59 (辰時)</option>
+                    <option value="9">09:00 - 09:59 (巳時)</option>
+                    <option value="10">10:00 - 10:59 (巳時)</option>
+                    <option value="11">11:00 - 11:59 (午時)</option>
+                    <option value="12">12:00 - 12:59 (午時)</option>
+                    <option value="13">13:00 - 13:59 (未時)</option>
+                    <option value="14">14:00 - 14:59 (未時)</option>
+                    <option value="15">15:00 - 15:59 (申時)</option>
+                    <option value="16">16:00 - 16:59 (申時)</option>
+                    <option value="17">17:00 - 17:59 (酉時)</option>
+                    <option value="18">18:00 - 18:59 (酉時)</option>
+                    <option value="19">19:00 - 19:59 (戌時)</option>
+                    <option value="20">20:00 - 20:59 (戌時)</option>
+                    <option value="21">21:00 - 21:59 (亥時)</option>
+                    <option value="22">22:00 - 22:59 (亥時)</option>
+                    <option value="23">23:00 - 23:59 (晚子時)</option>
                 </select>
             </div>
             <div class="input-group">
@@ -479,6 +502,20 @@
 
     // 節氣平均日 (簡化版，1-12月對應小寒到大雪)
     const JIE_DAYS = [6, 4, 6, 5, 6, 6, 7, 8, 8, 8, 8, 7];
+
+    // 喜用神對照表 (日干 -> 月支 -> 喜用神)
+    const FAVORABLE_GODS = {
+        "甲": { "寅": "丙癸", "卯": "庚丙丁戊己", "辰": "庚丁壬", "巳": "癸丁庚", "午": "癸丁庚", "未": "癸庚丁", "申": "庚丁壬", "酉": "庚丁丙", "戌": "庚甲丁壬癸", "亥": "庚丁丙戊", "子": "丁庚丙", "丑": "丁庚丙" },
+        "乙": { "寅": "丙癸", "卯": "丙癸", "辰": "癸丙戊", "巳": "癸", "午": "癸丙", "未": "癸丙", "申": "丙癸己", "酉": "癸丙丁", "戌": "癸辛", "亥": "丙戊", "子": "丙", "丑": "丙" },
+        "丙": { "寅": "壬庚", "卯": "壬己", "辰": "壬甲", "巳": "壬庚癸", "午": "壬庚", "未": "壬庚", "申": "壬戊", "酉": "壬癸", "戌": "甲壬", "亥": "甲戊庚壬", "子": "壬戊甲", "丑": "壬甲" },
+        "丁": { "寅": "甲庚", "卯": "庚甲", "辰": "甲庚", "巳": "甲庚", "午": "壬庚癸", "未": "甲壬庚", "申": "甲庚丙戊", "酉": "甲庚丙戊", "戌": "甲庚戊", "亥": "甲庚", "子": "甲庚", "丑": "甲庚" },
+        "戊": { "寅": "丙甲癸", "卯": "丙甲癸", "辰": "甲丙癸", "巳": "甲丙癸", "午": "壬甲丙", "未": "癸丙甲", "申": "丙癸甲", "酉": "丙癸", "戌": "甲丙癸", "亥": "甲丙", "子": "丙甲", "丑": "丙甲" },
+        "己": { "寅": "丙庚甲", "卯": "甲癸丙", "辰": "丙癸甲", "巳": "癸丙", "午": "癸丙", "未": "癸丙", "申": "丙癸", "酉": "丙癸", "戌": "甲癸丙", "亥": "丙甲戊", "子": "丙甲戊", "丑": "丙甲戊" },
+        "庚": { "寅": "戊甲壬丙丁", "卯": "丁甲庚丙", "辰": "甲丁壬癸", "巳": "壬戊丙丁", "午": "壬癸", "未": "丁甲", "申": "丁甲", "酉": "丁甲丙", "戌": "甲壬", "亥": "丁丙", "子": "丁甲丙", "丑": "丙丁甲" },
+        "辛": { "寅": "己壬庚", "卯": "壬甲", "辰": "壬甲", "巳": "壬甲癸", "午": "壬己癸", "未": "壬庚甲", "申": "壬甲戊", "酉": "壬甲", "戌": "壬甲", "亥": "壬丙", "子": "丙戊壬甲", "丑": "丙壬戊己" },
+        "壬": { "寅": "庚丙戊", "卯": "戊辛庚", "辰": "甲庚", "巳": "壬辛庚癸", "午": "癸庚辛", "未": "辛甲", "申": "戊丁", "酉": "甲庚", "戌": "甲丙", "亥": "戊丙庚", "子": "戊丙", "丑": "丙丁甲" },
+        "癸": { "寅": "辛丙", "卯": "庚辛", "辰": "丙辛甲", "巳": "辛庚", "午": "庚辛壬癸", "未": "庚辛壬癸", "申": "丁", "酉": "辛丙", "戌": "辛甲壬癸", "亥": "庚辛戊丁", "子": "丙辛", "丑": "丙丁" }
+    };
 
     // --- 核心邏輯 ---
 
@@ -572,12 +609,25 @@
     }
 
     function calculateBazi() {
-        const y = parseInt(document.getElementById('in-year').value);
-        const m = parseInt(document.getElementById('in-month').value);
-        const d = parseInt(document.getElementById('in-day').value);
+        let y = parseInt(document.getElementById('in-year').value);
+        let m = parseInt(document.getElementById('in-month').value);
+        let d = parseInt(document.getElementById('in-day').value);
         const h = parseInt(document.getElementById('in-hour').value);
 
-        const pillars = calculatePillars(y, m, d, h);
+        // 處理晚子時 (23:00 - 23:59)：算作隔天的開始
+        if (h === 23) {
+            const dateObj = new Date(Date.UTC(y, m - 1, d + 1));
+            y = dateObj.getUTCFullYear();
+            m = dateObj.getUTCMonth() + 1;
+            d = dateObj.getUTCDate();
+        }
+
+        let hBranch = -1;
+        if (h !== -1) {
+            hBranch = Math.floor((h + 1) % 24 / 2);
+        }
+
+        const pillars = calculatePillars(y, m, d, hBranch);
         const dayStem = pillars.day[0];
 
         // 1. 渲染主盤
@@ -633,11 +683,28 @@
         // 依據得令與否判斷身強身弱
         const isStrong = deLing;
 
+        const dayStemName = STEMS[dayStem];
+        const monthBranchName = BRANCHES[pillars.month[1]];
+        const favGodsStr = FAVORABLE_GODS[dayStemName][monthBranchName];
+        
+        let favGodsHtml = '';
+        if (favGodsStr) {
+            const favGodsArr = favGodsStr.split('');
+            favGodsHtml = favGodsArr.map(god => {
+                const godIdx = STEMS.indexOf(god);
+                const wxIdx = STEM_WX[godIdx];
+                const wxName = WUXING_NAMES[wxIdx];
+                const wxColor = WUXING_COLORS[wxIdx];
+                return `<span class="tag bg-${wxColor} c-${wxColor}" style="margin-right: 6px; font-size: 0.9rem; padding: 6px 12px;">${god} (${wxName})</span>`;
+            }).join('');
+        }
+
         const analysis = document.getElementById('analysis-content');
         analysis.innerHTML = `
             <p>日主 <span class="bazi-char c-${WUXING_COLORS[dWx]}" style="font-size:1.2rem;">${STEMS[dayStem]}</span> 屬${WUXING_NAMES[dWx]}，整體能量判定為：<span class="highlight" style="font-size:1.2rem;">${isStrong ? '身強' : '身弱'}</span></p>
             <ul>
                 <li><strong>月令：</strong>生於${BRANCHES[pillars.month[1]]}月，${deLing ? '得令 (月支生助日主)，故判定為身強' : '失令 (月支消耗日主)，故判定為身弱'}。</li>
+                <li><strong>調候喜用：</strong>日干「${dayStemName}」生於「${monthBranchName}」月，建議喜用神為：<br><div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;">${favGodsHtml}</div></li>
             </ul>
         `;
 
