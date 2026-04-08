@@ -407,15 +407,15 @@
         <div class="input-grid">
             <div class="input-group">
                 <label>出生年 (西元)</label>
-                <input type="number" id="in-year" value="1990" min="1900" max="2100">
+                <select id="in-year"></select>
             </div>
             <div class="input-group">
                 <label>出生月</label>
-                <input type="number" id="in-month" value="1" min="1" max="12">
+                <select id="in-month"></select>
             </div>
             <div class="input-group">
                 <label>出生日</label>
-                <input type="number" id="in-day" value="1" min="1" max="31">
+                <select id="in-day"></select>
             </div>
             <div class="input-group">
                 <label>出生時辰</label>
@@ -719,6 +719,62 @@
             resultSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
     }
+
+    // 初始化日期下拉選單
+    function initDateSelects() {
+        const yearSelect = document.getElementById('in-year');
+        const monthSelect = document.getElementById('in-month');
+        const daySelect = document.getElementById('in-day');
+
+        // 填入年份 (1900 - 2100)
+        for (let i = 1900; i <= 2100; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i + ' 年';
+            if (i === 1990) option.selected = true;
+            yearSelect.appendChild(option);
+        }
+
+        // 填入月份 (1 - 12)
+        for (let i = 1; i <= 12; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i + ' 月';
+            if (i === 1) option.selected = true;
+            monthSelect.appendChild(option);
+        }
+
+        // 更新日期的函數 (處理大小月與閏年)
+        function updateDays() {
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
+            // 取得該月的天數 (將 day 設為 0 會回傳上個月的最後一天)
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            const currentDay = parseInt(daySelect.value) || 1;
+            daySelect.innerHTML = '';
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + ' 日';
+                // 保持原本選擇的日期，如果原本的日期大於該月天數，則選擇最後一天
+                if (i === currentDay || (i === daysInMonth && currentDay > daysInMonth)) {
+                    option.selected = true;
+                }
+                daySelect.appendChild(option);
+            }
+        }
+
+        yearSelect.addEventListener('change', updateDays);
+        monthSelect.addEventListener('change', updateDays);
+
+        // 初始化日期
+        updateDays();
+    }
+
+    // 頁面載入時初始化
+    document.addEventListener('DOMContentLoaded', initDateSelects);
 </script>
 
 </body>
